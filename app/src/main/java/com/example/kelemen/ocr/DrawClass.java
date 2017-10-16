@@ -88,6 +88,7 @@ public class DrawClass extends View {
             canvas.drawPath(drawingArr.get(drawingArr.size() - 1).getPath()
                     , drawingArr.get(drawingArr.size() - 1).getPaint());
         }
+        setDrawingCacheEnabled(true);
     }
 
     public Bitmap getBitmap(){
