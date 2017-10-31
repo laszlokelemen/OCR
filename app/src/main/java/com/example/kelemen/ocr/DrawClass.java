@@ -36,14 +36,16 @@ public class DrawClass extends View {
     }
 
     private void setPaintAndPath() {
+
         path = new Path();
         paint = new Paint();
         paint.setColor(Color.BLACK);
         paint.setAntiAlias(true);
-        paint.setStrokeWidth(12f);
+        paint.setStrokeWidth(30f);
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeJoin(Paint.Join.ROUND);
         paint.setStrokeCap(Paint.Cap.SQUARE);
+
     }
 
     @Override
@@ -51,6 +53,7 @@ public class DrawClass extends View {
         super.onSizeChanged(w, h, oldw, oldh);
         bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         canvas = new Canvas(bitmap);
+
     }
 
     public static Path getPath() {
@@ -91,7 +94,7 @@ public class DrawClass extends View {
         setDrawingCacheEnabled(true);
     }
 
-    public Bitmap getBitmap(){
+    public Bitmap getBitmap() {
         return bitmap;
     }
 

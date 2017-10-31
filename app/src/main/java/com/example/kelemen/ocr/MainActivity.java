@@ -1,42 +1,52 @@
 package com.example.kelemen.ocr;
 
-import android.Manifest;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Environment;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.Toast;
 
-import java.io.BufferedWriter;
+import com.example.kelemen.ocr.ocr_engine.Train;
+
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
 
     Button clearButton;
     Button saveButton;
+    Button trainButton;
+    Button detect_button;
     DrawClass view;
+    String selectedItem;
+    Train networkTrain;
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ActivityCompat.requestPermissions(MainActivity.this,
-                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-
+        networkTrain = new Train();
         clearButton = (Button) findViewById(R.id.button);
         saveButton = (Button) findViewById(R.id.button2);
+        trainButton = (Button) findViewById(R.id.train_button);
+        detect_button = (Button) findViewById(R.id.detect_button);
+//        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+
+
+        Spinner spinner = (Spinner) findViewById(R.id.spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.training_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
 
         view = (DrawClass) findViewById(R.id.touch_view);
         view.setBackgroundColor(Color.WHITE);
@@ -46,12 +56,32 @@ public class MainActivity extends AppCompatActivity {
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
 
         view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+
+
+        detect_button.setOnClickListener(v ->{
+            networkTrain.setInputs(BitmapHandler.saveBitmapToArray(view));
+            ArrayList<Double> outputs = networkTrain.getOutputs();
+            int index = 0;
+            for(int i=0; i< outputs.size();i++){
+                if(outputs.get(i) > outputs.get(index)){
+                    index = i;
+                }
+            }
+            updateTextArea();
+            view.buildDrawingCache();
+            view.destroyDrawingCache();
+
+        });
+
+        trainButton.setOnClickListener(v -> {
+            int trainNumber = 5000;
+            networkTrain.train(trainNumber);
+        });
+
         clearButton.setOnClickListener(v -> {
             DrawClass.getPath().reset();
             view.invalidate();
-//                view.setDrawingCacheEnabled(false);
         });
-
 
         saveButton.setOnClickListener(v -> {
             AlertDialog.Builder saveDialog = new AlertDialog.Builder(view.getContext());
@@ -59,17 +89,15 @@ public class MainActivity extends AppCompatActivity {
             saveDialog.setMessage("Save drawing to device Gallery?");
             saveDialog.setPositiveButton("Yes", (dialog, which) -> {
 
-                if (saveBitmapToArray(view) != null) {
+                if (BitmapHandler.saveBitmapToArray(view) != null) {
                     Toast savedToast = Toast.makeText(getApplicationContext(),
-                            "Drawing saved to Gallery!", Toast.LENGTH_SHORT);
+                            "Drawing saved !", Toast.LENGTH_SHORT);
                     savedToast.show();
-                    Log.d("Arraylist:", String.valueOf(saveBitmapToArray(view)));
-                    Log.d("!!!!!!!!!!!!!!", String.valueOf(saveBitmapToArray(view).size()));
-                    writeToFile(saveBitmapToArray(view));
+                    ReadAndWriteFile.writeToFile(BitmapHandler.saveBitmapToArray(view), getSelectedItem());
 
                 } else {
                     Toast unsavedToast = Toast.makeText(getApplicationContext(),
-                            "Image could not be saved.", Toast.LENGTH_SHORT);
+                            "Drawing could not be saved.", Toast.LENGTH_SHORT);
                     unsavedToast.show();
                 }
             });
@@ -79,58 +107,52 @@ public class MainActivity extends AppCompatActivity {
             view.destroyDrawingCache();
         });
 
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                setSelectedItem(spinner.getSelectedItem().toString());
+            }
 
-    }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
 
-    void writeToFile(ArrayList<Integer> arr) {
-        String root = Environment.getExternalStorageState();
-        File myDir = new File(root + "/savedLetter");
-        myDir.mkdirs();
-        Random generRandom = new Random();
-        int n = 10000;
-        n = generRandom.nextInt(n);
-        String fileName = "letter-" + n + ".jpg";
-        File file = new File(myDir, fileName);
-        try (BufferedWriter bf = new BufferedWriter(new FileWriter(fileName))) {
-            writingFile(arr, bf);
-            bf.flush();
-            bf.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void writingFile(ArrayList<Integer> arr, BufferedWriter bf) {
-        arr.forEach(number -> {
-            try {
-                bf.write(number);
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         });
-
     }
 
-    public ArrayList<Integer> saveBitmapToArray(DrawClass view) {
-        Bitmap resultBitmap = Bitmap.createBitmap(view.getDrawingCache(), 0, 0,
-                view.getDrawingCache().getWidth() - 1, view.getDrawingCache().getHeight() - 1);
-        ArrayList<Integer> arrayList = new ArrayList<>();
-        int width = resultBitmap.getWidth();
-        int height = resultBitmap.getHeight();
+    private void updateTextArea() {
+        StringBuilder sb = new StringBuilder();
+        ArrayList<Double> outputs = networkTrain.getOutputs();
+        for (int i = 0; i < outputs.size(); i++) {
+            int letterValue = i + 65;
+            sb.append((char) letterValue);
+            double value = outputs.get(i);
+            if (value < 0.01)
+            {
+                value = 0;}
+            if (value > 0.99)
+            {value = 1;}
 
-        for (int x = 1; x < width; x++) {
-            for (int y = 1; y < height; y++) {
+            value *= 1000;
+            int x = (int) (value);
+            value = x / 1000.0;
 
-                int pixel = resultBitmap.getPixel(x, y);
-                if (Color.rgb(Color.red(Color.BLACK), Color.green(Color.BLACK), Color.blue(Color.BLACK)) == Color.rgb(Color.red(pixel), Color.green(pixel), Color.blue(pixel))) {
-                    arrayList.add(1);
-                } else {
-                    arrayList.add(0);
-                }
-            }
+            sb.append("\t ").append(value);
+            sb.append("\n");
         }
-        return arrayList;
+        System.out.println("///////////////////////////////////////////////////////////////////////////");
+        System.out.println((sb.toString()));
+
     }
+
+    private void setSelectedItem(String item) {
+        selectedItem = item;
+    }
+
+    public String getSelectedItem() {
+        return selectedItem;
+    }
+
 
 
 }
