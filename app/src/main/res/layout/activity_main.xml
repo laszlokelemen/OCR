@@ -9,10 +9,12 @@
 
     <com.example.kelemen.ocr.DrawClass
         android:id="@+id/touch_view"
-        android:layout_width="400dp"
-        android:layout_height="400dp"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
         android:layout_above="@+id/button2"
-        android:background="#ffff"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="150dp"
         android:visibility="visible" />
 
     <Button
@@ -29,7 +31,7 @@
         android:id="@+id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="SAVE"
+        android:text="SAVE AS"
         android:layout_above="@+id/button"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
@@ -50,7 +52,8 @@
         android:text="TRAIN"
         tools:ignore="HardcodedText"
         android:layout_alignParentBottom="true"
-        android:layout_toEndOf="@+id/detect_button" />
+        android:layout_toEndOf="@+id/detect_button"
+        android:layout_marginStart="12dp" />
 
     <Button
         android:id="@+id/detect_button"
@@ -60,6 +63,16 @@
         android:layout_alignParentBottom="true"
         android:layout_toEndOf="@+id/button"
         tools:ignore="HardcodedText" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="70dp"
+        android:layout_height="110dp"
+        android:layout_above="@+id/spinner"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="25dp"
+        android:gravity="center"
+        android:textSize="110sp" />
 
 
 </RelativeLayout>

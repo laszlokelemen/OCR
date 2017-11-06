@@ -1,6 +1,9 @@
 package com.example.kelemen.ocr;
 
 
+import android.content.Context;
+import android.os.Environment;
+
 import com.example.kelemen.ocr.ocr_engine.DataSet;
 import com.example.kelemen.ocr.ocr_engine.TargetOutputs;
 
@@ -11,14 +14,16 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class ReadAndWriteFile {
 
-    private static final String FOLDER = "data/user/0/com.example.kelemen.ocr/files/";
-
+    private static final String FOLDER = "data/data/com.example.kelemen.ocr/ocrFiles/";
 
     public static void writeToFile(ArrayList<Integer> arr, String selectedItem) {
-        try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(FOLDER + selectedItem + ".txt", true));) {
+        createOcrFilesFolder();
+
+        try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(FOLDER + selectedItem + ".txt", true))) {
             for (Integer i : arr) {
                 writer.append(String.valueOf(i));
             }
@@ -27,6 +32,13 @@ public class ReadAndWriteFile {
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private static void createOcrFilesFolder() {
+        File file = new File(FOLDER);
+        if (!file.exists()) {
+            file.mkdirs();
         }
     }
 
@@ -52,23 +64,18 @@ public class ReadAndWriteFile {
     }
 
     public static ArrayList<DataSet> getDataSet() {
-        ArrayList<DataSet> dataSet = new ArrayList<>();
+        ArrayList<DataSet> dataSet = new ArrayList<DataSet>();
         File fileDirectory = new File(FOLDER);
         File[] files = fileDirectory.listFiles();
-        if (files.length != 0) {
+        if (files != null) {
             for (File file : files) {
                 String fileName = file.getName();
                 String fileNameWithoutExtension = fileName.split(".txt")[0];
                 for (ArrayList<Integer> line : readFromFile(file)) {
                     dataSet.add(new DataSet(line, TargetOutputs.checkInit().getTargetValues(fileNameWithoutExtension)));
                 }
-
             }
         }
-
-
-
-
         return dataSet;
     }
 

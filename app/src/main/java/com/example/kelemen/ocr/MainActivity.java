@@ -10,12 +10,16 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.kelemen.ocr.ocr_engine.Train;
 
-import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringJoiner;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,18 +31,19 @@ public class MainActivity extends AppCompatActivity {
     DrawClass view;
     String selectedItem;
     Train networkTrain;
+    TextView resultText;
     ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         networkTrain = new Train();
         clearButton = (Button) findViewById(R.id.button);
         saveButton = (Button) findViewById(R.id.button2);
         trainButton = (Button) findViewById(R.id.train_button);
         detect_button = (Button) findViewById(R.id.detect_button);
+        resultText = (TextView) findViewById(R.id.textView);
 //        progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
 
@@ -58,24 +63,37 @@ public class MainActivity extends AppCompatActivity {
         view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
 
 
-        detect_button.setOnClickListener(v ->{
+        detect_button.setOnClickListener(v -> {
             networkTrain.setInputs(BitmapHandler.saveBitmapToArray(view));
-            ArrayList<Double> outputs = networkTrain.getOutputs();
-            int index = 0;
-            for(int i=0; i< outputs.size();i++){
-                if(outputs.get(i) > outputs.get(index)){
-                    index = i;
+            if (networkTrain.checkDataSet().size() == 0) {
+                Toast errToast = Toast.makeText(getApplicationContext(),
+                        "Training set is empty!", Toast.LENGTH_SHORT);
+                errToast.show();
+            } else {
+                ArrayList<Double> outputs = networkTrain.getOutputs();
+                int index = 0;
+                for (int i = 0; i < outputs.size(); i++) {
+                    if (outputs.get(i) > outputs.get(index)) {
+                        index = i;
+                    }
                 }
+                updateTextArea();
+                view.buildDrawingCache();
+                view.destroyDrawingCache();
             }
-            updateTextArea();
-            view.buildDrawingCache();
-            view.destroyDrawingCache();
 
         });
 
         trainButton.setOnClickListener(v -> {
-            int trainNumber = 5000;
-            networkTrain.train(trainNumber);
+            if (networkTrain.checkDataSet().size() == 0) {
+                Toast errToast = Toast.makeText(getApplicationContext(),
+                        "Training set is empty!", Toast.LENGTH_SHORT);
+                errToast.show();
+            } else {
+                networkTrain.loadDataSet();
+                int trainNumber = 5000;
+                networkTrain.train(trainNumber);
+            }
         });
 
         clearButton.setOnClickListener(v -> {
@@ -121,21 +139,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateTextArea() {
+        Map<String, Double> resultMap = new HashMap<String, Double>();
         StringBuilder sb = new StringBuilder();
         ArrayList<Double> outputs = networkTrain.getOutputs();
         for (int i = 0; i < outputs.size(); i++) {
             int letterValue = i + 65;
+
             sb.append((char) letterValue);
             double value = outputs.get(i);
-            if (value < 0.01)
-            {
-                value = 0;}
-            if (value > 0.99)
-            {value = 1;}
+            if (value < 0.01) {
+                value = 0;
+            }
+            if (value > 0.99) {
+                value = 1;
+            }
 
             value *= 1000;
             int x = (int) (value);
             value = x / 1000.0;
+
+            resultMap.put(String.valueOf((char) letterValue), value);
 
             sb.append("\t ").append(value);
             sb.append("\n");
@@ -143,6 +166,18 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("///////////////////////////////////////////////////////////////////////////");
         System.out.println((sb.toString()));
 
+        resultText.setText(geMaxValueKey(resultMap).getKey());
+    }
+
+    public Map.Entry<String, Double> geMaxValueKey(Map<String, Double> map) {
+        Map.Entry<String, Double> maxEntry = null;
+
+        for (Map.Entry<String, Double> entry : map.entrySet()) {
+            if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0) {
+                maxEntry = entry;
+            }
+        }
+        return maxEntry;
     }
 
     private void setSelectedItem(String item) {
@@ -152,7 +187,6 @@ public class MainActivity extends AppCompatActivity {
     public String getSelectedItem() {
         return selectedItem;
     }
-
 
 
 }

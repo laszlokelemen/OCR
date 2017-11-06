@@ -1,5 +1,6 @@
 package com.example.kelemen.ocr.ocr_engine;
 
+
 import com.example.kelemen.ocr.ReadAndWriteFile;
 
 import java.util.ArrayList;
@@ -14,9 +15,16 @@ public class Train {
     public Train() {
         this.network = new Network();
         this.network.addNeurons(NEURON_NUMBER);
-        this.dataSets = ReadAndWriteFile.getDataSet();
-
     }
+
+    public ArrayList<DataSet> checkDataSet() {
+        return ReadAndWriteFile.getDataSet();
+    }
+
+    public void loadDataSet() {
+        this.dataSets = ReadAndWriteFile.getDataSet();
+    }
+
 
     public void train(long trainNumber) {
         for (int i = 0; i < trainNumber; i++) {
