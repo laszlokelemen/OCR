@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast detectErrToast = Toast.makeText(getApplicationContext(),
                         "The Neuron network is silly.You should train it!", Toast.LENGTH_SHORT);
                 detectErrToast.show();
+            } else {
                 networkTrain.setInputs(BitmapMgr.processBitmap(view));
                 if (networkTrain.checkDataSet().size() == 0) {
                     Toast errToast = Toast.makeText(getApplicationContext(),
@@ -167,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void training() {
         networkTrain.loadDataSet();
-        int trainNumber = 5000;
+        int trainNumber = 1000;
         networkTrain.train(trainNumber);
     }
 
