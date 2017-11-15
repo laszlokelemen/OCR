@@ -1,4 +1,4 @@
-package com.example.kelemen.ocr;
+package com.example.kelemen.ocr.drawing;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -12,25 +12,25 @@ import android.view.View;
 
 import java.util.ArrayList;
 
-public class DrawClass extends View {
+public class Draw extends View {
 
     private Paint paint;
     private static Path path;
     Bitmap bitmap;
     Canvas canvas;
-    private ArrayList<DrawingHandlerClass> drawingArr = new ArrayList<>();
+    private ArrayList<Drawing> drawingArr = new ArrayList<>();
 
-    public DrawClass(Context context) {
+    public Draw(Context context) {
         super(context);
         setPaintAndPath();
     }
 
-    public DrawClass(Context context, AttributeSet attrs) {
+    public Draw(Context context, AttributeSet attrs) {
         super(context, attrs);
         setPaintAndPath();
     }
 
-    public DrawClass(Context context, AttributeSet attrs, int defStyleAttr) {
+    public Draw(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setPaintAndPath();
     }
@@ -62,7 +62,7 @@ public class DrawClass extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        DrawingHandlerClass drawingHandlerClass = new DrawingHandlerClass();
+        Drawing drawing = new Drawing();
 
         canvas.drawPath(path, paint);
         switch (event.getAction()) {
@@ -72,9 +72,9 @@ public class DrawClass extends View {
                 break;
             case MotionEvent.ACTION_MOVE:
                 path.lineTo(event.getX(), event.getY());
-                drawingHandlerClass.setPath(path);
-                drawingHandlerClass.setPaint(paint);
-                drawingArr.add(drawingHandlerClass);
+                drawing.setPath(path);
+                drawing.setPaint(paint);
+                drawingArr.add(drawing);
                 break;
 
             default:
@@ -93,10 +93,4 @@ public class DrawClass extends View {
         }
         setDrawingCacheEnabled(true);
     }
-
-    public Bitmap getBitmap() {
-        return bitmap;
-    }
-
-
 }

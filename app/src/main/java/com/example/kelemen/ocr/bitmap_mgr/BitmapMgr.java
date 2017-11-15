@@ -1,16 +1,16 @@
-package com.example.kelemen.ocr;
+package com.example.kelemen.ocr.bitmap_mgr;
 
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
 
+import com.example.kelemen.ocr.drawing.Draw;
+
 import java.util.ArrayList;
 
-public class BitmapHandler {
+public class BitmapMgr {
 
-    public static ArrayList<Integer> saveBitmapToArray(DrawClass view) {
-//        Bitmap resultBitmap = Bitmap.createBitmap(view.getDrawingCache(), 0, 0,
-//                view.getDrawingCache().getWidth(), view.getDrawingCache().getHeight());
+    public static ArrayList<Integer> processBitmap(Draw view) {
         Bitmap resultBitmap = Bitmap.createScaledBitmap(view.getDrawingCache(), 20, 20, true);
         ArrayList<Integer> arrayList = new ArrayList<>();
         int width = resultBitmap.getWidth();

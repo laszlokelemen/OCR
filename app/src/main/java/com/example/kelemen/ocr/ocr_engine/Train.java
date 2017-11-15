@@ -1,13 +1,13 @@
 package com.example.kelemen.ocr.ocr_engine;
 
 
-import com.example.kelemen.ocr.ReadAndWriteFile;
+import com.example.kelemen.ocr.read_and_write_file.ReadAndWriteFile;
 
 import java.util.ArrayList;
 
 public class Train {
 
-    public static final int NEURON_NUMBER = 3;
+    public static final int NEURON_NUMBER = 36;
 
     private Network network;
     private ArrayList<DataSet> dataSets;
@@ -37,10 +37,6 @@ public class Train {
 
     public void setInputs(ArrayList<Integer> inputs) {
         network.setNeuronsInputValue(inputs);
-    }
-
-    public void addDataSet(DataSet dataSet) {
-        dataSets.add(dataSet);
     }
 
     public ArrayList<Double> getOutputs() {

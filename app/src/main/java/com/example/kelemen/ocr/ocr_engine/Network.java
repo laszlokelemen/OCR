@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Network {
 
-    ArrayList<Neuron> neurons;
+    private ArrayList<Neuron> neurons;
 
     public Network() {
         neurons = new ArrayList<>();
@@ -24,8 +24,8 @@ public class Network {
 
     public ArrayList<Double> getOutputs() {
         ArrayList<Double> outputs = new ArrayList<>();
-        for (Neuron n : neurons) {
-            outputs.add(n.getOutputValue());
+        for (Neuron neuron : neurons) {
+            outputs.add(neuron.getOutputValue());
         }
         return outputs;
     }

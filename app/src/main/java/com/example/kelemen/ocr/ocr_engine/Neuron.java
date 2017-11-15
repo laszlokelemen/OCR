@@ -48,6 +48,7 @@ public class Neuron {
         sum += BIAS * weightForBias;
 
          output = sigmoid(sum);
+
     }
 
     public double getOutputValue() {

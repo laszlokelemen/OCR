@@ -1,8 +1,5 @@
-package com.example.kelemen.ocr;
+package com.example.kelemen.ocr.read_and_write_file;
 
-
-import android.content.Context;
-import android.os.Environment;
 
 import com.example.kelemen.ocr.ocr_engine.DataSet;
 import com.example.kelemen.ocr.ocr_engine.TargetOutputs;
@@ -14,7 +11,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class ReadAndWriteFile {
 
