@@ -1,4 +1,4 @@
-package com.example.kelemen.ocr.ocr_engine;
+package com.example.kelemen.ocr.ocr_mgr;
 
 
 import com.example.kelemen.ocr.read_and_write_file.ReadAndWriteFile;

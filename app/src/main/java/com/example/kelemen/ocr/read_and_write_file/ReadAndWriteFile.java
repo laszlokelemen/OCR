@@ -1,8 +1,8 @@
 package com.example.kelemen.ocr.read_and_write_file;
 
 
-import com.example.kelemen.ocr.ocr_engine.DataSet;
-import com.example.kelemen.ocr.ocr_engine.TargetOutputs;
+import com.example.kelemen.ocr.ocr_mgr.DataSet;
+import com.example.kelemen.ocr.ocr_mgr.TargetOutputs;
 
 import java.io.BufferedReader;
 import java.io.File;

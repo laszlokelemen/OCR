@@ -1,4 +1,6 @@
-package com.example.kelemen.ocr.ocr_engine;
+package com.example.kelemen.ocr.ocr_mgr;
+
+import com.example.kelemen.ocr.util.MathUtil;
 
 import java.util.ArrayList;
 
@@ -47,7 +49,7 @@ public class Neuron {
         }
         sum += BIAS * weightForBias;
 
-         output = sigmoid(sum);
+        output = MathUtil.sigmoid(sum);
 
     }
 
@@ -63,7 +65,5 @@ public class Neuron {
         return weight;
     }
 
-    private double sigmoid(double sum) {
-        return (1 / (1 + Math.exp(-sum)));
-    }
+
 }

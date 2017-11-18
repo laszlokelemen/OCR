@@ -1,4 +1,4 @@
-package com.example.kelemen.ocr.ocr_engine;
+package com.example.kelemen.ocr.ocr_mgr;
 
 
 import java.util.ArrayList;

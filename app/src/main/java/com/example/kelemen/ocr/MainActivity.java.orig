@@ -18,9 +18,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.kelemen.ocr.bitmap_mgr.BitmapMgr;
+<<<<<<< HEAD
+import com.example.kelemen.ocr.calculator.CalculatorMgr;
+import com.example.kelemen.ocr.drawing.Draw;
+import com.example.kelemen.ocr.ocr_engine.TargetOutputs;
+import com.example.kelemen.ocr.ocr_engine.Train;
+=======
+import com.example.kelemen.ocr.calculator_mgr.CalculatorMgr;
+import com.example.kelemen.ocr.drawing.Draw;
 import com.example.kelemen.ocr.ocr_mgr.TargetOutputs;
 import com.example.kelemen.ocr.ocr_mgr.Train;
-import com.example.kelemen.ocr.drawing.Draw;
+>>>>>>> New: Calculator option And fix some issues
 import com.example.kelemen.ocr.read_and_write_file.ReadAndWriteFile;
 
 import java.text.DecimalFormat;
@@ -75,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         detect_button.setOnClickListener(v -> {
             if (!counter) {
                 Toast detectErrToast = Toast.makeText(getApplicationContext(),
-                        "The Neuron network is unlearned.You should train it!", Toast.LENGTH_SHORT);
+                         "The Neuron network is unlearned.You should train it!", Toast.LENGTH_SHORT);
                 detectErrToast.show();
             } else {
                 networkTrain.setInputs(BitmapMgr.processBitmap(view));
@@ -155,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    
+
     private void setView() {
         view = (Draw) findViewById(R.id.touch_view);
         view.setBackgroundColor(Color.WHITE);
@@ -220,14 +228,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void showResultText(Map<String, Double> resultMap) {
         if (calcSwitch.isChecked()) {
-            String result = (com.example.kelemen.ocr.calculator_mgr.CalculatorMgr.calculatorEngine(getMaxValueKey(resultMap).getKey(), stack, getApplicationContext(), calcText, stackValue));
+            String result = (CalculatorMgr.calculatorEngine(getMaxValueKey(resultMap).getKey(), stack, getApplicationContext(), calcText, stackValue));
             if (result.equals("")) {
                 resultText.setText(getMaxValueKey(resultMap).getKey());
             } else {
                 resultText.setText(result);
                 calcText.setText("");
             }
-        }else {
+        } else {
             resultText.setText(getMaxValueKey(resultMap).getKey());
         }
     }

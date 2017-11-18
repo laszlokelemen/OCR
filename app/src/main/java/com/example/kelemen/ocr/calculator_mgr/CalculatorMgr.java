@@ -1,4 +1,4 @@
-package com.example.kelemen.ocr.calculator;
+package com.example.kelemen.ocr.calculator_mgr;
 
 
 import android.content.Context;
@@ -31,7 +31,7 @@ public class CalculatorMgr {
         } else if (result.equals("=") && stack.size() == 3) {
             String operation = "";
             while (!stack.isEmpty()) {
-                String stackPop = stack.pop();
+                String stackPop = stack.pop();  
                 if (android.text.TextUtils.isDigitsOnly(stackPop)) {
                     numbers.add(Integer.valueOf(stackPop));
                 } else if (stackPop.matches("[+*/-]")) {
@@ -68,7 +68,7 @@ public class CalculatorMgr {
             case "-":
                 return MathUtil.sub(numberA, numberB);
             case "/":
-                if (!checkDenominatorIsNull(numberA, context)) {
+                if (!isDenominatorNull(numberA, context)) {
                     return MathUtil.div(numberA, numberB);
                 }
             case "*":
@@ -77,7 +77,7 @@ public class CalculatorMgr {
         return 0;
     }
 
-    private static Boolean checkDenominatorIsNull(int denomination, Context context) {
+    private static Boolean isDenominatorNull(int denomination, Context context) {
         if (denomination == 0) {
             Toast errToast = Toast.makeText(context.getApplicationContext(),
                     "Denominator is null!", Toast.LENGTH_SHORT);
