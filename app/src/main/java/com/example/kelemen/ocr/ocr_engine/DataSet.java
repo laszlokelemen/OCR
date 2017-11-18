@@ -19,6 +19,4 @@ public class DataSet {
     public ArrayList<Double> getOutput() {
         return output;
     }
-
-
 }

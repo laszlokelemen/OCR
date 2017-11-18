@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -12,19 +13,22 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.kelemen.ocr.drawing.Draw;
-import com.example.kelemen.ocr.read_and_write_file.ReadAndWriteFile;
 import com.example.kelemen.ocr.bitmap_mgr.BitmapMgr;
+import com.example.kelemen.ocr.calculator.CalculatorMgr;
+import com.example.kelemen.ocr.drawing.Draw;
 import com.example.kelemen.ocr.ocr_engine.TargetOutputs;
 import com.example.kelemen.ocr.ocr_engine.Train;
+import com.example.kelemen.ocr.read_and_write_file.ReadAndWriteFile;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Stack;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -37,27 +41,23 @@ public class MainActivity extends AppCompatActivity {
     String selectedItem;
     Train networkTrain;
     TextView resultText;
+    TextView calcText;
+    Switch calcSwitch;
     Boolean counter = false;
+    Stack<String> stack;
+    StringBuilder stackValue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         networkTrain = new Train();
+        stack = new Stack();
+        stackValue = new StringBuilder();
+        calcSwitch = (Switch) findViewById(R.id.calculatorSwitch);
         initButtons();
-        Spinner spinner = (Spinner) findViewById(R.id.spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.training_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        view = (Draw) findViewById(R.id.touch_view);
-        view.setBackgroundColor(Color.WHITE);
-        view.setDrawingCacheEnabled(true);
-
-        view.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-
-        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+        Spinner spinner = initSpinner();
+        setView();
 
 
         helpButton.setOnClickListener(v -> {
@@ -65,10 +65,10 @@ public class MainActivity extends AppCompatActivity {
             dialog.setContentView(R.layout.information_layout);
             dialog.setTitle("Information");
 
-            TextView textView = (TextView) dialog.findViewById(R.id.helpTextView);
+            TextView textView = dialog.findViewById(R.id.helpTextView);
             textView.setText("1:Train the network before you start to detect." + "\n" + "2:Use your finger to draw" + "\n" + "3:Push the 'Detect' button to detect your draw" + "\n" + "4:Save the draw, train ,and repeat the third step.");
 
-            ImageButton dismissButton = (ImageButton) dialog.findViewById(R.id.closeButton);
+            ImageButton dismissButton = dialog.findViewById(R.id.closeButton);
             dismissButton.setOnClickListener(view1 -> dialog.dismiss());
             dialog.show();
         });
@@ -94,16 +94,16 @@ public class MainActivity extends AppCompatActivity {
 
         trainButton.setOnClickListener(v -> {
             counter = true;
-            final ProgressDialog progressBar = new ProgressDialog(MainActivity.this, R.style.progressBarStyle);
-            progressBar.setTitle("Training");
-            progressBar.setMessage("Training is in progress");
-            progressBar.show();
-
             if (networkTrain.checkDataSet().size() == 0) {
                 Toast errToast = Toast.makeText(getApplicationContext(),
                         "Training set is empty!", Toast.LENGTH_SHORT);
                 errToast.show();
             } else {
+                final ProgressDialog progressBar = new ProgressDialog(MainActivity.this, R.style.progressBarStyle);
+                progressBar.setTitle("Training");
+                progressBar.setMessage("Training is in progress");
+                progressBar.show();
+
                 new Thread(() -> {
                     training();
                     progressBar.cancel();
@@ -121,14 +121,14 @@ public class MainActivity extends AppCompatActivity {
         saveButton.setOnClickListener(v -> {
             AlertDialog.Builder saveDialog = new AlertDialog.Builder(view.getContext());
             saveDialog.setTitle("Save");
-            saveDialog.setMessage("Save drawing to device Gallery?");
+            saveDialog.setMessage("Save drawing to device?");
             saveDialog.setPositiveButton("Yes", (dialog, which) -> {
 
                 if (BitmapMgr.processBitmap(view) != null) {
                     Toast savedToast = Toast.makeText(getApplicationContext(),
-                            "Drawing saved !", Toast.LENGTH_SHORT);
+                            "Drawing saved as " + getSelectedItem() + "!", Toast.LENGTH_SHORT);
                     savedToast.show();
-                    ReadAndWriteFile.writeToFile(BitmapMgr.processBitmap(view), getSelectedItem());
+                    ReadAndWriteFile.writeToFile(BitmapMgr.processBitmap(view), checkSelectedItem(getSelectedItem()));
                     Draw.getPath().reset();
                     view.invalidate();
 
@@ -157,6 +157,27 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void setView() {
+        view = (Draw) findViewById(R.id.touch_view);
+        view.setBackgroundColor(Color.WHITE);
+        view.setDrawingCacheEnabled(true);
+
+        view.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+
+        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+    }
+
+    @NonNull
+    private Spinner initSpinner() {
+        Spinner spinner = (Spinner) findViewById(R.id.spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.training_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        return spinner;
+    }
+
     private void initButtons() {
         helpButton = (ImageButton) findViewById(R.id.helpButton);
         clearButton = (Button) findViewById(R.id.button);
@@ -164,6 +185,8 @@ public class MainActivity extends AppCompatActivity {
         trainButton = (Button) findViewById(R.id.train_button);
         detect_button = (Button) findViewById(R.id.detect_button);
         resultText = (TextView) findViewById(R.id.resultText);
+        calcText = (TextView) findViewById(R.id.calculatorTextView);
+
     }
 
     private void training() {
@@ -185,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
                 value = 1;
             }
             value = Double.parseDouble(new DecimalFormat("##.##").format(value));
-            resultMap.put(TargetOutputs.getChars().get(i), value);
+            resultMap.put(checkSelectedItem(TargetOutputs.getChars().get(i)), value);
 
             sb.append("\t ").append(value);
             sb.append("\n");
@@ -193,10 +216,24 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("///////////////////////////////////////////////////////////////////////////");
         System.out.println((sb.toString()));
 
-        resultText.setText(geMaxValueKey(resultMap).getKey());
+        showResultText(resultMap);
     }
 
-    public Map.Entry<String, Double> geMaxValueKey(Map<String, Double> map) {
+    private void showResultText(Map<String, Double> resultMap) {
+        if (calcSwitch.isChecked()) {
+            String result = (CalculatorMgr.calculatorEngine(getMaxValueKey(resultMap).getKey(), stack, getApplicationContext(), calcText, stackValue));
+            if (result.equals("")) {
+                resultText.setText(getMaxValueKey(resultMap).getKey());
+            } else {
+                resultText.setText(result);
+                calcText.setText("");
+            }
+        } else {
+            resultText.setText(getMaxValueKey(resultMap).getKey());
+        }
+    }
+
+    public Map.Entry<String, Double> getMaxValueKey(Map<String, Double> map) {
         Map.Entry<String, Double> maxEntry = null;
 
         for (Map.Entry<String, Double> entry : map.entrySet()) {
@@ -207,11 +244,26 @@ public class MainActivity extends AppCompatActivity {
         return maxEntry;
     }
 
+
     private void setSelectedItem(String item) {
         selectedItem = item;
     }
 
     String getSelectedItem() {
+        return selectedItem;
+    }
+
+    private String checkSelectedItem(String selectedItem) {
+        switch (selectedItem) {
+            case "/":
+                return "div";
+            case "*":
+                return "mult";
+            case "div":
+                return "/";
+            case "mult":
+                return "*";
+        }
         return selectedItem;
     }
 

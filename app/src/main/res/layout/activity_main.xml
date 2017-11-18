@@ -12,10 +12,10 @@
         android:id="@+id/frameLayout"
         android:layout_width="260dp"
         android:layout_height="260dp"
-        android:layout_above="@+id/resultText"
-        android:layout_centerHorizontal="true"
         android:background="@android:color/holo_green_dark"
-        android:visibility="visible">
+        android:visibility="visible"
+        android:layout_above="@+id/resultText"
+        android:layout_centerHorizontal="true">
 
         <com.example.kelemen.ocr.drawing.Draw
             android:id="@+id/touch_view"
@@ -76,13 +76,14 @@
 
     <TextView
         android:id="@+id/resultText"
-        android:layout_width="75dp"
+        android:layout_width="100dp"
         android:layout_height="120dp"
         android:layout_above="@+id/spinner"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="11dp"
         android:gravity="center"
-        android:textSize="110sp" />
+        android:textSize="110sp"
+        tools:text="1" />
 
     <ImageButton
         android:id="@+id/helpButton"
@@ -94,5 +95,21 @@
         android:layout_alignParentEnd="true"
         tools:ignore="ContentDescription" />
 
+    <Switch
+        android:id="@+id/calculatorSwitch"
+        android:layout_width="140dp"
+        android:layout_height="40dp"
+        android:layout_above="@+id/button2"
+        android:layout_alignParentStart="true"
+        android:text="CALCULATOR" />
+
+    <TextView
+        android:id="@+id/calculatorTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_above="@+id/calculatorSwitch"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/resultText"
+        android:gravity="center"/>
 
 </RelativeLayout>

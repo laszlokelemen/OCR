@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class Train {
 
-    public static final int NEURON_NUMBER = 36;
+    private static final int NEURON_NUMBER = 41;
 
     private Network network;
     private ArrayList<DataSet> dataSets;
@@ -43,4 +43,7 @@ public class Train {
         return network.getOutputs();
     }
 
+    public static int getNeronNumber(){
+        return NEURON_NUMBER;
+    }
 }

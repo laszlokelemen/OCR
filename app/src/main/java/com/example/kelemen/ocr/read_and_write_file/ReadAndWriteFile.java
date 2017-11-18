@@ -65,14 +65,19 @@ public class ReadAndWriteFile {
         File[] files = fileDirectory.listFiles();
         if (files != null) {
             for (File file : files) {
+//                file.delete();
                 String fileName = file.getName();
                 String fileNameWithoutExtension = fileName.split(".txt")[0];
-                for (ArrayList<Integer> line : readFromFile(file)) {
-                    dataSet.add(new DataSet(line, TargetOutputs.checkInit().getTargetValues(fileNameWithoutExtension)));
-                }
+                putLineAndLetterToMap(dataSet, file, fileNameWithoutExtension);
             }
         }
         return dataSet;
+    }
+
+    private static void putLineAndLetterToMap(ArrayList<DataSet> dataSet, File file, String fileNameWithoutExtension) {
+        for (ArrayList<Integer> line : readFromFile(file)) {
+            dataSet.add(new DataSet(line, TargetOutputs.checkInit().getTargetValues(fileNameWithoutExtension)));
+        }
     }
 
 }

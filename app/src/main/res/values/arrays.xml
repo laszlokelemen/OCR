@@ -37,5 +37,10 @@
         <item>7</item>
         <item>8</item>
         <item>9</item>
+        <item>+</item>
+        <item>-</item>
+        <item>*</item>
+        <item>/</item>
+        <item>=</item>
     </string-array>
 </resources>

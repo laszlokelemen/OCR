@@ -23,5 +23,4 @@ public class Drawing {
     public void setPaint(Paint paint) {
         this.paint = paint;
     }
-
 }
