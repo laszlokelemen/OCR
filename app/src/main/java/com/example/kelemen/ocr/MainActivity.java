@@ -1,6 +1,7 @@
 package com.example.kelemen.ocr;
 
 import android.app.Dialog;
+import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -18,9 +19,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.kelemen.ocr.bitmap_mgr.BitmapMgr;
+import com.example.kelemen.ocr.calculator_mgr.CalculatorMgr;
+import com.example.kelemen.ocr.drawing.Draw;
 import com.example.kelemen.ocr.ocr_mgr.TargetOutputs;
 import com.example.kelemen.ocr.ocr_mgr.Train;
-import com.example.kelemen.ocr.drawing.Draw;
 import com.example.kelemen.ocr.read_and_write_file.ReadAndWriteFile;
 
 import java.text.DecimalFormat;
@@ -36,28 +38,25 @@ public class MainActivity extends AppCompatActivity {
     Button trainButton;
     Button detect_button;
     ImageButton helpButton;
-    Draw view;
-    String selectedItem;
-    Train networkTrain;
     TextView resultText;
     TextView calcText;
     Switch calcSwitch;
+    Draw view;
+    Train networkTrain;
     Boolean counter = false;
-    Stack<String> stack;
-    StringBuilder stackValue;
+    String selectedItem;
+    CalculatorMgr calculatorMgr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         networkTrain = new Train();
-        stack = new Stack();
-        stackValue = new StringBuilder();
+        calculatorMgr = new CalculatorMgr();
         calcSwitch = (Switch) findViewById(R.id.calculatorSwitch);
         initButtons();
         Spinner spinner = initSpinner();
         setView();
-
 
         helpButton.setOnClickListener(v -> {
             final Dialog dialog = new Dialog(MainActivity.this);
@@ -155,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    
+
     private void setView() {
         view = (Draw) findViewById(R.id.touch_view);
         view.setBackgroundColor(Color.WHITE);
@@ -219,15 +218,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showResultText(Map<String, Double> resultMap) {
+
         if (calcSwitch.isChecked()) {
-            String result = (com.example.kelemen.ocr.calculator_mgr.CalculatorMgr.calculatorEngine(getMaxValueKey(resultMap).getKey(), stack, getApplicationContext(), calcText, stackValue));
+            String result = (calculatorMgr.calculatorEngine(getMaxValueKey(resultMap).getKey(), getApplicationContext(), calcText));
             if (result.equals("")) {
                 resultText.setText(getMaxValueKey(resultMap).getKey());
             } else {
                 resultText.setText(result);
                 calcText.setText("");
             }
-        }else {
+        } else {
             resultText.setText(getMaxValueKey(resultMap).getKey());
         }
     }

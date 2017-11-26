@@ -30,7 +30,7 @@ public class TargetOutputs {
         return targetValues.get(letter);
     }
 
-    private ArrayList<Double> getTargetList() {
+    public ArrayList<Double> getTargetList() {
         ArrayList<Double> doubleArrayList = new ArrayList<>();
         for (int i = 0; i < Train.getNeronNumber(); i++) {
             doubleArrayList.add(0.0);

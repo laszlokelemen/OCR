@@ -31,7 +31,7 @@ public class Train {
             int index = (int) (Math.random() * dataSets.size());
             DataSet dataSet = dataSets.get(index);
             network.setNeuronsInputValue(dataSet.getInput());
-            network.adjusWages(dataSet.getOutput());
+            network.adjustWages(dataSet.getOutput());
         }
     }
 
