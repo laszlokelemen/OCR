@@ -9,6 +9,8 @@ import com.example.kelemen.ocr.util.MathUtil;
 
 import java.util.Stack;
 
+import static android.text.TextUtils.isDigitsOnly;
+
 public class CalculatorMgr {
 
     private Stack<Character> characterStack = new Stack();
@@ -17,20 +19,20 @@ public class CalculatorMgr {
 
     public String calculatorEngine(String result, Context context, TextView calcText) {
         String input = "";
-        if (android.text.TextUtils.isDigitsOnly(result) && stack.isEmpty()) {
+        if (isDigitsOnly(result) && stack.isEmpty()) {
             stack.push(result);
             stringBuilder.append(result);
-        } else if (!stack.isEmpty() && android.text.TextUtils.isDigitsOnly(stack.peek()) && android.text.TextUtils.isDigitsOnly(result)) {
+        } else if (!stack.isEmpty() && isDigitsOnly(stack.peek()) && isDigitsOnly(result)) {
             Toast errToast = Toast.makeText(context.getApplicationContext(),
                     "Add a mathematical operator!", Toast.LENGTH_SHORT);
             errToast.show();
-        } else if (!stack.isEmpty() && android.text.TextUtils.isDigitsOnly(stack.peek()) && result.matches("[+*/-]")) {
+        } else if (!stack.isEmpty() && isDigitsOnly(stack.peek()) && result.matches("[+*/-]")) {
             stack.push(result);
             stringBuilder.append(result);
-        } else if (!stack.isEmpty() && stack.peek().matches("[+*/-]") && android.text.TextUtils.isDigitsOnly(result)) {
+        } else if (!stack.isEmpty() && stack.peek().matches("[+*/-]") && isDigitsOnly(result)) {
             stack.push(result);
             stringBuilder.append(result);
-        } else if (result.equals("=") && stack.size() > 2) {
+        } else if (result.equals("=") && stack.size() > 2 && isDigitsOnly(stack.peek())) {
             while (!stack.isEmpty()) {
                 input += stack.pop();
             }
@@ -106,7 +108,7 @@ public class CalculatorMgr {
         String numOrOperand;
         for (int i = 0; i < input.length(); i++) {
             numOrOperand = String.valueOf(input.charAt(i));
-            if (android.text.TextUtils.isDigitsOnly(numOrOperand)) {
+            if (isDigitsOnly(numOrOperand)) {
                 int intNumOrOperand = Integer.parseInt(numOrOperand);
                 stack.push(intNumOrOperand);
             } else {
@@ -117,6 +119,8 @@ public class CalculatorMgr {
                     int numberB = stack.pop();
                     if (!isDenominatorNull(numberB, context)) {
                         stack.push(MathUtil.div(numberB, numberA));
+                    } else {
+                        stack.push(0);
                     }
                 } else if (numOrOperand.equals("+")) {
                     stack.push(MathUtil.add(stack.pop(), stack.pop()));
