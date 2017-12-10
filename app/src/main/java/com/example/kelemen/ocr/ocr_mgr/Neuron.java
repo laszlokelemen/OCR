@@ -49,7 +49,6 @@ public class Neuron {
         }
         sum += BIAS * weightForBias;
         output = MathUtil.sigmoid(sum);
-
     }
 
     public double getOutputValue() {
@@ -60,7 +59,7 @@ public class Neuron {
     private double calculateNewWeight(double delta, int i) {
         double weight;
         weight = weights.get(i);
-        weight += LEARNING_RATE * delta * input.get(i);
+        weight = weight + LEARNING_RATE * delta * input.get(i);
         return weight;
     }
 

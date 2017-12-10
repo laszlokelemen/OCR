@@ -1,7 +1,6 @@
 package com.example.kelemen.ocr;
 
 import android.app.Dialog;
-import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -29,7 +28,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Stack;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -100,6 +98,8 @@ public class MainActivity extends AppCompatActivity {
                 final ProgressDialog progressBar = new ProgressDialog(MainActivity.this, R.style.progressBarStyle);
                 progressBar.setTitle("Training");
                 progressBar.setMessage("Training is in progress");
+                progressBar.setCanceledOnTouchOutside(false);
+                progressBar.setCancelable(false);
                 progressBar.show();
 
                 new Thread(() -> {
@@ -107,7 +107,6 @@ public class MainActivity extends AppCompatActivity {
                     progressBar.cancel();
                 }).start();
             }
-
 
         });
 
@@ -189,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void training() {
         networkTrain.loadDataSet();
-        int trainNumber = 1000;
+        int trainNumber = 2500;
         networkTrain.train(trainNumber);
     }
 

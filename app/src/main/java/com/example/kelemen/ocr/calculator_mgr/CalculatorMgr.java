@@ -13,7 +13,7 @@ import static android.text.TextUtils.isDigitsOnly;
 
 public class CalculatorMgr {
 
-    private Stack<Character> characterStack = new Stack();
+    private Stack<Character> characterStack = new Stack<>();
     private Stack<String> stack = new Stack<>();
     private StringBuilder stringBuilder = new StringBuilder();
 
@@ -62,49 +62,54 @@ public class CalculatorMgr {
         return false;
     }
 
-    private String doTranslation(String input) {
+    String doTranslation(String input) {
         String output = "";
         for (int j = 0; j < input.length(); j++) {
             char ch = input.charAt(j);
             switch (ch) {
                 case '+':
                 case '-':
-                    output = gotOper(ch, 1, output);
+                    output = gotOperator(ch, 1, output);
                     break;
                 case '*':
                 case '/':
-                    output = gotOper(ch, 2, output);
+                    output = gotOperator(ch, 2, output);
                     break;
                 default:
                     output = output + ch;
                     break;
             }
         }
-        while (!characterStack.isEmpty()) {
-            output = output + characterStack.pop();
+        while (!getCharacterStack().isEmpty()) {
+            output = output + getCharacterStack().pop();
         }
         return output;
     }
 
-    private String gotOper(char opThis, int prec1, String output) {
-        while (!characterStack.isEmpty()) {
-            char opTop = characterStack.pop();
+    public Stack<Character> getCharacterStack() {
+        return characterStack;
+    }
+
+    String gotOperator(char opThis, int prec1, String output) {
+        while (!getCharacterStack().isEmpty()) {
+            char opTop = getCharacterStack().pop();
             int prec2;
-            if (opTop == '+' || opTop == '-')
+            if (opTop == '+' || opTop == '-') {
                 prec2 = 1;
-            else
+            } else {
                 prec2 = 2;
+            }
             if (prec2 < prec1) {
-                characterStack.push(opTop);
+                getCharacterStack().push(opTop);
                 break;
             } else output = output + opTop;
         }
-        characterStack.push(opThis);
+        getCharacterStack().push(opThis);
         return output;
     }
 
-    private int calculateResult(String input, Context context) {
-        Stack<Integer> stack = new Stack();
+    int calculateResult(String input, Context context) {
+        Stack<Integer> stack = new Stack<>();
         String numOrOperand;
         for (int i = 0; i < input.length(); i++) {
             numOrOperand = String.valueOf(input.charAt(i));

@@ -43,7 +43,7 @@ public class Train {
         return network.getOutputs();
     }
 
-    public static int getNeronNumber(){
+    public static int getNeronNumber() {
         return NEURON_NUMBER;
     }
 }
