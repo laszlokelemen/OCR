@@ -72,7 +72,7 @@ public class CalculatorMgrTest {
 
     @Test
     public void testDividerIsNull() {
-        doReturn(toastMock).when(calculatorMgrSpy).getToast(any(), any());
+        doReturn(toastMock).when(calculatorMgrSpy).getDividerNullToast(any());
         calculatorMgrSpy.isDividerNull(0, contextMock);
         verify(toastMock, Mockito.times(1)).show();
     }
@@ -86,7 +86,6 @@ public class CalculatorMgrTest {
     @Test
     public void testCalculatorEngine() {
         Stack<String> testStack = new Stack<>();
-        doReturn(toastMock).when(calculatorMgrSpy).getToast(any(), any());
         when(calculatorMgrSpy.getStack()).thenReturn(testStack);
         doReturn(true).when(calculatorMgrSpy).isDigitsOnly("1");
 
@@ -97,10 +96,11 @@ public class CalculatorMgrTest {
     @Test
     public void testCalculatorEngineWithWrongInput() {
         Stack<String> testStack = new Stack<>();
-        doReturn(toastMock).when(calculatorMgrSpy).getToast(any(), any());
+        doReturn(toastMock).when(calculatorMgrSpy).getMakeMatOpToast(any());
         when(calculatorMgrSpy.getStack()).thenReturn(testStack);
         doReturn(false).when(calculatorMgrSpy).isDigitsOnly("/");
-        doReturn(toastMock).when(calculatorMgrSpy).getToast(any(), any());
+        doReturn(toastMock).when(calculatorMgrSpy).getWrongSequenceToast(any());
+
 
         calculatorMgrSpy.calculatorEngine("/", contextMock, textViewMock);
         assertThat(testStack.size(),is(0));

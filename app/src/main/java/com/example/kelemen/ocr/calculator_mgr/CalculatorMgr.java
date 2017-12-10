@@ -23,7 +23,7 @@ public class CalculatorMgr {
             getStack().push(result);
             stringBuilder.append(result);
         } else if (!getStack().isEmpty() && isDigitsOnly(getStack().peek()) && isDigitsOnly(result)) {
-            Toast errToast = getToast(context, "Add a mathematical operator!");
+            Toast errToast = getMakeMatOpToast(context);
             errToast.show();
         } else if (!getStack().isEmpty() && isDigitsOnly(getStack().peek()) && result.matches("[+*/-]")) {
             getStack().push(result);
@@ -39,7 +39,7 @@ public class CalculatorMgr {
             stringBuilder.setLength(0);
             return String.valueOf(calculateResult(doTranslation(input), context));
         } else {
-            Toast errToast = getToast(context, "Wrong mathematics sequence!");
+            Toast errToast = getWrongSequenceToast(context);
             errToast.show();
         }
         setCalculatorTextViewContent(calcText, stringBuilder);
@@ -56,7 +56,7 @@ public class CalculatorMgr {
 
     Boolean isDividerNull(int denomination, Context context) {
         if (denomination == 0) {
-            Toast errToast = getToast(context, "Divider is null!");
+            Toast errToast = getDividerNullToast(context);
             errToast.show();
             return true;
         }
@@ -147,5 +147,20 @@ public class CalculatorMgr {
 
     boolean isDigitsOnly(String numOrOperand) {
         return TextUtils.isDigitsOnly(numOrOperand);
+    }
+
+    Toast getWrongSequenceToast(Context context) {
+        return Toast.makeText(context.getApplicationContext(),
+                "Wrong mathematics sequence!", Toast.LENGTH_SHORT);
+    }
+
+    Toast getMakeMatOpToast(Context context) {
+        return Toast.makeText(context.getApplicationContext(),
+                "Add a mathematical operator!", Toast.LENGTH_SHORT);
+    }
+
+    Toast getDividerNullToast(Context context) {
+        return Toast.makeText(context.getApplicationContext(),
+                "Denominator is null!", Toast.LENGTH_SHORT);
     }
 }
