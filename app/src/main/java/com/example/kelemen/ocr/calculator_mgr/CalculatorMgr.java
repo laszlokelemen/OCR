@@ -2,6 +2,7 @@ package com.example.kelemen.ocr.calculator_mgr;
 
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -9,7 +10,6 @@ import com.example.kelemen.ocr.util.MathUtil;
 
 import java.util.Stack;
 
-import static android.text.TextUtils.isDigitsOnly;
 
 public class CalculatorMgr {
 
@@ -19,48 +19,54 @@ public class CalculatorMgr {
 
     public String calculatorEngine(String result, Context context, TextView calcText) {
         String input = "";
-        if (isDigitsOnly(result) && stack.isEmpty()) {
-            stack.push(result);
+        if (isDigitsOnly(result) && getStack().isEmpty()) {
+            getStack().push(result);
             stringBuilder.append(result);
-        } else if (!stack.isEmpty() && isDigitsOnly(stack.peek()) && isDigitsOnly(result)) {
-            Toast errToast = Toast.makeText(context.getApplicationContext(),
-                    "Add a mathematical operator!", Toast.LENGTH_SHORT);
+        } else if (!getStack().isEmpty() && isDigitsOnly(getStack().peek()) && isDigitsOnly(result)) {
+            Toast errToast = getToast(context, "Add a mathematical operator!");
             errToast.show();
-        } else if (!stack.isEmpty() && isDigitsOnly(stack.peek()) && result.matches("[+*/-]")) {
-            stack.push(result);
+        } else if (!getStack().isEmpty() && isDigitsOnly(getStack().peek()) && result.matches("[+*/-]")) {
+            getStack().push(result);
             stringBuilder.append(result);
-        } else if (!stack.isEmpty() && stack.peek().matches("[+*/-]") && isDigitsOnly(result)) {
-            stack.push(result);
+        } else if (!getStack().isEmpty() && getStack().peek().matches("[+*/-]") && isDigitsOnly(result)) {
+            getStack().push(result);
             stringBuilder.append(result);
-        } else if (result.equals("=") && stack.size() > 2 && isDigitsOnly(stack.peek())) {
-            while (!stack.isEmpty()) {
-                input += stack.pop();
+        } else if (result.equals("=") && getStack().size() > 2 && isDigitsOnly(getStack().peek())) {
+            while (!getStack().isEmpty()) {
+                input += getStack().pop();
             }
             input = new StringBuilder(input).reverse().toString();
             stringBuilder.setLength(0);
             return String.valueOf(calculateResult(doTranslation(input), context));
         } else {
-            Toast errToast = Toast.makeText(context.getApplicationContext(),
-                    "Wrong mathematics sequence!", Toast.LENGTH_SHORT);
+            Toast errToast = getToast(context, "Wrong mathematics sequence!");
             errToast.show();
         }
         setCalculatorTextViewContent(calcText, stringBuilder);
         return "";
     }
 
+    Stack<String> getStack() {
+        return stack;
+    }
+
     private void setCalculatorTextViewContent(TextView calcText, StringBuilder stringBuilder) {
         calcText.setText(stringBuilder);
     }
 
-    private Boolean isDenominatorNull(int denomination, Context context) {
+    Boolean isDividerNull(int denomination, Context context) {
         if (denomination == 0) {
-            Toast errToast = Toast.makeText(context.getApplicationContext(),
-                    "Denominator is null!", Toast.LENGTH_SHORT);
+            Toast errToast = getToast(context, "Divider is null!");
             errToast.show();
             return true;
         }
         return false;
     }
+
+    Toast getToast(Context context, String text) {
+        return getToast(context, text);
+    }
+
 
     String doTranslation(String input) {
         String output = "";
@@ -69,11 +75,11 @@ public class CalculatorMgr {
             switch (ch) {
                 case '+':
                 case '-':
-                    output = gotOperator(ch, 1, output);
+                    output = getOperator(ch, 1, output);
                     break;
                 case '*':
                 case '/':
-                    output = gotOperator(ch, 2, output);
+                    output = getOperator(ch, 2, output);
                     break;
                 default:
                     output = output + ch;
@@ -90,7 +96,7 @@ public class CalculatorMgr {
         return characterStack;
     }
 
-    String gotOperator(char opThis, int prec1, String output) {
+    String getOperator(char opThis, int prec1, String output) {
         while (!getCharacterStack().isEmpty()) {
             char opTop = getCharacterStack().pop();
             int prec2;
@@ -122,7 +128,7 @@ public class CalculatorMgr {
                 } else if (numOrOperand.equals("/")) {
                     int numberA = stack.pop();
                     int numberB = stack.pop();
-                    if (!isDenominatorNull(numberB, context)) {
+                    if (!isDividerNull(numberB, context)) {
                         stack.push(MathUtil.div(numberB, numberA));
                     } else {
                         stack.push(0);
@@ -137,5 +143,9 @@ public class CalculatorMgr {
             }
         }
         return stack.pop();
+    }
+
+    boolean isDigitsOnly(String numOrOperand) {
+        return TextUtils.isDigitsOnly(numOrOperand);
     }
 }
